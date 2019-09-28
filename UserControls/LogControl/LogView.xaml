@@ -1,0 +1,128 @@
+﻿<UserControl x:Class="WExtraControlLibrary.UserControls.LogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WExtraControlLibrary.UserControls.LogControl"
+             xmlns:main="Control"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+    </UserControl.Resources>
+    
+    <DockPanel>
+        <Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="{Binding LogEntries.Count, StringFormat='{}{0} Items'}"/>
+            <Button Content="Clear" Grid.Column="1" HorizontalAlignment="Right" FontSize="10" MaxHeight="24" Margin="0,0,10,0" Click="Button_Click"/>
+        </Grid>
+        <ListBox x:Name="LB_LogItems" ItemsSource="{Binding LogEntries}" BorderThickness="0">
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type local:LogEntry}">
+                    <Grid IsSharedSizeScope="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="Date" Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Message}" Grid.Column="2"
+                       TextWrapping="Wrap"/>
+                    </Grid>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type local:ActionLogEntry}">
+                    <Grid IsSharedSizeScope="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="Date" Width="Auto"/>
+                            <ColumnDefinition SharedSizeGroup="SYSID" Width="Auto"/>
+                            <ColumnDefinition SharedSizeGroup="Action" Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="{Binding EventTime , StringFormat=HH:mm:ss}" Grid.Column="0"
+                       FontWeight="Bold" Margin="5,0,5,0"/>
+
+                        <TextBlock Text="{Binding Name}" Grid.Column="1"
+                       FontWeight="Bold" Margin="0,0,5,0">
+                            <TextBlock.Foreground>
+                                <SolidColorBrush Color="{Binding FSYSIDColor}"/>
+                            </TextBlock.Foreground>
+                        </TextBlock>
+
+                        <TextBlock Text="{Binding ActionCODE}" Grid.Column="2"
+                       FontWeight="Bold" Margin="0,0,5,0" Foreground="White">
+                            <TextBlock.Background>
+                                <SolidColorBrush Color="{Binding BActionsColor}"/>
+                            </TextBlock.Background>
+                        </TextBlock>
+
+                        <TextBlock Text="{Binding Message}" Grid.Column="3"
+                       TextWrapping="Wrap"/>
+                    </Grid>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type local:CollapsibleActionLogEntry}">
+                    <Grid IsSharedSizeScope="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="Date" Width="Auto"/>
+                            <ColumnDefinition SharedSizeGroup="SYSID" Width="Auto"/>
+                            <ColumnDefinition SharedSizeGroup="Action" Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="{Binding DateTime , StringFormat=HH:mm:ss}" Grid.Column="0"
+                       FontWeight="Bold" Margin="5,0,5,0"/>
+
+                        <TextBlock Text="{Binding Name}" Grid.Column="1"
+                       FontWeight="Bold" Margin="0,0,5,0">
+                            <TextBlock.Foreground>
+                                <SolidColorBrush Color="{Binding FSYSIDColor}"/>
+                            </TextBlock.Foreground>
+                        </TextBlock>
+
+                        <TextBlock Text="{Binding ActionCODE}" Grid.Column="2" Foreground="White"
+                       FontWeight="Bold" Margin="0,0,5,0">
+                            <TextBlock.Background>
+                                <SolidColorBrush Color="{Binding BActionsColor}"/>
+                            </TextBlock.Background>
+                        </TextBlock>
+
+                        <TextBlock Text="{Binding Message}" Grid.Column="3"
+                       TextWrapping="Wrap"/>
+
+                        <ToggleButton x:Name="Expander" Grid.Row="1" Grid.Column="0"
+                          VerticalAlignment="Top" Content="+" HorizontalAlignment="Right"/>
+
+                        <ItemsControl ItemsSource="{Binding Contents}"
+                          Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                          x:Name="Contents" Visibility="Collapsed"/>
+
+                    </Grid>
+                    <DataTemplate.Triggers>
+                        <Trigger SourceName="Expander" Property="IsChecked" Value="True">
+                            <Setter TargetName="Contents" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="Expander" Property="Content" Value="-"/>
+                        </Trigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ListBox.Resources>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <ContentPresenter/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+    </DockPanel>
+</UserControl>
