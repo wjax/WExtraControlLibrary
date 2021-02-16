@@ -91,7 +91,8 @@ namespace WExtraControlLibrary.UserControls.SimpleDock
             var currContent = Content as IUndockable;
             Content = null;
             // Create Window and keep reference
-            Window w = new Window() { Title = this.Title };
+            Size size = (currContent as UIElement).RenderSize;
+            Window w = new Window() { Title = this.Title, SizeToContent= SizeToContent.Manual, Width = size.Width, Height= size.Height };
             w.Content = currContent;
             w.Closing += OnClosingChildWindow;
             w.Show();
