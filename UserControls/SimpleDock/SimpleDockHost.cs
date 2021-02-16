@@ -61,16 +61,6 @@ namespace WExtraControlLibrary.UserControls.SimpleDock
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register("Title", typeof(string), typeof(SimpleDockHost), new PropertyMetadata(""));
 
-
-        //public ICommand UndockCommand
-        //{
-        //    get { return (ICommand)GetValue(UndockCommandProperty); }
-        //    set { SetValue(UndockCommandProperty, value); }
-        //}
-
-        //// Using a DependencyProperty as the backing store for UndockCommand.  This enables animation, styling, binding, etc...
-        //public static readonly DependencyProperty UndockCommandProperty =
-        //    DependencyProperty.Register("UndockCommand", typeof(ICommand), typeof(SimpleDockHost), new PropertyMetadata(null));
         #endregion
 
         private bool IsDesignMode => (bool)DesignerProperties.IsInDesignModeProperty.GetMetadata(typeof(DependencyObject)).DefaultValue;
@@ -98,14 +88,15 @@ namespace WExtraControlLibrary.UserControls.SimpleDock
         private void OnUndockClick(object sender, RoutedEventArgs e)
         {
             // Remove from current visual tree
-            var currContent = Content;
+            var currContent = Content as IUndockable;
             Content = null;
             // Create Window and keep reference
-            Window w = new Window();
+            Window w = new Window() { Title = this.Title };
             w.Content = currContent;
+            w.Closing += OnClosingChildWindow;
             w.Show();
 
-            w.Closing += OnClosingChildWindow;
+            this.Visibility = Visibility.Collapsed;
         }
 
         private void OnClosingChildWindow(object sender, CancelEventArgs e)
@@ -120,6 +111,7 @@ namespace WExtraControlLibrary.UserControls.SimpleDock
             (sender as Window).Content = null;
             // Reconnect here
             Content = child;
+            this.Visibility = Visibility.Visible;
         }
     }
 }

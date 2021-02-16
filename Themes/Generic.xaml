@@ -15,7 +15,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <material:ColorZone Mode="PrimaryDark" Height="24">
+                        <material:ColorZone Mode="Dark" Height="24">
                             <Grid>
                                 <TextBlock Text="{TemplateBinding Title}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,5,0,5"/>
                                 <Button x:Name="B_Undock" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2" Padding="5"
