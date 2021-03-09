@@ -49,6 +49,29 @@ namespace WExtraControlLibrary.UserControls.IntegerUpDown
             control.TB_Value.Text = $"{control.Value} {e.NewValue.ToString()}";
         }
 
+
+        public int MaxValue
+        {
+            get { return (int)GetValue(MaxValueProperty); }
+            set { SetValue(MaxValueProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MaxValue.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MaxValueProperty =
+            DependencyProperty.Register("MaxValue", typeof(int), typeof(IntegerUpDownControl), new PropertyMetadata(int.MaxValue));
+
+
+        public int MinValue
+        {
+            get { return (int)GetValue(MinValueProperty); }
+            set { SetValue(MinValueProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MinValue.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MinValueProperty =
+            DependencyProperty.Register("MinValue", typeof(int), typeof(IntegerUpDownControl), new PropertyMetadata(0));
+
+
         public int Value
         {
             get { return (int)GetValue(ValueProperty); }
@@ -62,6 +85,9 @@ namespace WExtraControlLibrary.UserControls.IntegerUpDown
         private static void OnValueChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as IntegerUpDownControl;
+            if (!control.CheckValueWithinLimits((int)e.NewValue))
+                return;
+
             control.TB_Value.Text = e.NewValue.ToString() + $" {control.Suffix}";
         }
 
@@ -84,9 +110,18 @@ namespace WExtraControlLibrary.UserControls.IntegerUpDown
             InitializeComponent();
         }
 
+        public bool CheckValueWithinLimits(int value)
+        {
+            return value >= MinValue & value <= MaxValue;
+        }
+
         private async void B_UP_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            Value += Step;
+            var newValue = Value + Step;
+            if (!CheckValueWithinLimits(newValue))
+                return;
+
+            Value = newValue;
             UpPressed = true;
 
             int delay = 2000;
@@ -115,7 +150,11 @@ namespace WExtraControlLibrary.UserControls.IntegerUpDown
 
         private async void B_DOWN_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            Value -= Step;
+            var newValue = Value - Step;
+            if (!CheckValueWithinLimits(newValue))
+                return;
+
+            Value = newValue;
             DownPressed = true;
 
             int delay = 2000;
