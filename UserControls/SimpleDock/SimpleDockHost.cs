@@ -49,8 +49,20 @@ namespace WExtraControlLibrary.UserControls.SimpleDock
     public class SimpleDockHost : ContentControl
     {
         private const string B_Undock = "B_Undock";
+        private Window detachedWindow;
 
         #region dp
+        public UIElement Header
+        {
+            get { return (UIElement)GetValue(HeaderProperty); }
+            set { SetValue(HeaderProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Header.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HeaderProperty =
+            DependencyProperty.Register("Header", typeof(UIElement), typeof(SimpleDockHost), new PropertyMetadata(null));
+
+
         public string Title
         {
             get { return (string)GetValue(TitleProperty); }
@@ -59,7 +71,14 @@ namespace WExtraControlLibrary.UserControls.SimpleDock
 
         // Using a DependencyProperty as the backing store for Title.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register("Title", typeof(string), typeof(SimpleDockHost), new PropertyMetadata(""));
+            DependencyProperty.Register("Title", typeof(string), typeof(SimpleDockHost), new PropertyMetadata("", OnTitleChanged));
+
+        private static void OnTitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            SimpleDockHost h = (d as SimpleDockHost);
+            if (h.detachedWindow is not null)
+                h.detachedWindow.Title = e.NewValue as string;
+        }
 
         #endregion
 
@@ -92,10 +111,10 @@ namespace WExtraControlLibrary.UserControls.SimpleDock
             Content = null;
             // Create Window and keep reference
             Size size = (currContent as UIElement).RenderSize;
-            Window w = new Window() { Title = this.Title, SizeToContent= SizeToContent.Manual, Width = size.Width, Height= size.Height };
-            w.Content = currContent;
-            w.Closing += OnClosingChildWindow;
-            w.Show();
+            detachedWindow = new Window() { Title = this.Title, SizeToContent= SizeToContent.Manual, Width = size.Width, Height= size.Height };
+            detachedWindow.Content = currContent;
+            detachedWindow.Closing += OnClosingChildWindow;
+            detachedWindow.Show();
 
             this.Visibility = Visibility.Collapsed;
         }
@@ -113,6 +132,8 @@ namespace WExtraControlLibrary.UserControls.SimpleDock
             // Reconnect here
             Content = child;
             this.Visibility = Visibility.Visible;
+
+            detachedWindow = null;
         }
     }
 }
