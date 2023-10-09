@@ -10,5 +10,6 @@ namespace WExtraControlLibrary.UserControls.SimpleDock
     public interface IUndockable
     {
         public void SetParentWindow(Window w);
+        public object DataContext { get; }
     }
 }
