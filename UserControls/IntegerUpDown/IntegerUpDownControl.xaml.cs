@@ -49,6 +49,36 @@ namespace WExtraControlLibrary.UserControls.IntegerUpDown
             control.TB_Value.Text = $"{control.Value} {e.NewValue.ToString()}";
         }
 
+        public bool ContinuousUpdate
+        {
+            get { return (bool)GetValue(ContinuousUpdateProperty); }
+            set { SetValue(ContinuousUpdateProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MaxValue.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ContinuousUpdateProperty =
+            DependencyProperty.Register(nameof(ContinuousUpdate), typeof(bool), typeof(IntegerUpDownControl), new PropertyMetadata(false));
+
+        public int FastDelay
+        {
+            get { return (int)GetValue(FastDelayProperty); }
+            set { SetValue(FastDelayProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MaxValue.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FastDelayProperty =
+            DependencyProperty.Register(nameof(FastDelay), typeof(int), typeof(IntegerUpDownControl), new PropertyMetadata(100));
+        
+        
+        public int FastStep
+        {
+            get { return (int)GetValue(FastStepProperty); }
+            set { SetValue(FastStepProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MaxValue.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FastStepProperty =
+            DependencyProperty.Register(nameof(FastStep), typeof(int), typeof(IntegerUpDownControl), new PropertyMetadata(100));
 
         public int MaxValue
         {
@@ -124,13 +154,15 @@ namespace WExtraControlLibrary.UserControls.IntegerUpDown
             Value = newValue;
             UpPressed = true;
 
-            int delay = 2000;
+            int delay = 1000;
             while (UpPressed)
             {
                 await Task.Delay(delay);
                 if (UpPressed)
-                    Value += Step;
-                delay = delay > 500 ? delay - 500 : 100;
+                    Value += delay <= FastDelay ? FastStep : Step;
+                delay = delay > 500 ? delay - 500 : FastDelay;
+                if (ContinuousUpdate)
+                    Command?.Execute(Value);
             }
         }
 
@@ -157,13 +189,15 @@ namespace WExtraControlLibrary.UserControls.IntegerUpDown
             Value = newValue;
             DownPressed = true;
 
-            int delay = 2000;
+            int delay = 1000;
             while (DownPressed)
             {
                 await Task.Delay(delay);
                 if (DownPressed)
-                    Value -= Step;
-                delay = delay > 500 ? delay - 500 : 100;
+                    Value -= delay <= FastDelay ? FastStep : Step;
+                delay = delay > 500 ? delay - 500 : FastDelay;
+                if (ContinuousUpdate)
+                    Command?.Execute(Value);
             }
         }
     }
