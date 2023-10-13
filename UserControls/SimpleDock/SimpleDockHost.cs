@@ -1,55 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MaterialDesignExtensions.Controls;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace WExtraControlLibrary.UserControls.SimpleDock
 {
-    /// <summary>
-    /// Follow steps 1a or 1b and then 2 to use this custom control in a XAML file.
-    ///
-    /// Step 1a) Using this custom control in a XAML file that exists in the current project.
-    /// Add this XmlNamespace attribute to the root element of the markup file where it is 
-    /// to be used:
-    ///
-    ///     xmlns:MyNamespace="clr-namespace:WExtraControlLibrary.UserControls.SimpleDock"
-    ///
-    ///
-    /// Step 1b) Using this custom control in a XAML file that exists in a different project.
-    /// Add this XmlNamespace attribute to the root element of the markup file where it is 
-    /// to be used:
-    ///
-    ///     xmlns:MyNamespace="clr-namespace:WExtraControlLibrary.UserControls.SimpleDock;assembly=WExtraControlLibrary.UserControls.SimpleDock"
-    ///
-    /// You will also need to add a project reference from the project where the XAML file lives
-    /// to this project and Rebuild to avoid compilation errors:
-    ///
-    ///     Right click on the target project in the Solution Explorer and
-    ///     "Add Reference"->"Projects"->[Browse to and select this project]
-    ///
-    ///
-    /// Step 2)
-    /// Go ahead and use your control in the XAML file.
-    ///
-    ///     <MyNamespace:CustomControl1/>
-    ///
-    /// </summary>
     [TemplatePart(Name = B_Undock, Type = typeof(System.Windows.Controls.Button))]
     public class SimpleDockHost : ContentControl
     {
         private const string B_Undock = "B_Undock";
         private Window detachedWindow;
+
+        private const int MARGIN_WINDOW = 10;
 
         #region dp
         public UIElement Header
@@ -61,6 +23,16 @@ namespace WExtraControlLibrary.UserControls.SimpleDock
         // Using a DependencyProperty as the backing store for Header.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HeaderProperty =
             DependencyProperty.Register("Header", typeof(UIElement), typeof(SimpleDockHost), new PropertyMetadata(null));
+
+        public bool UseMaterialWindow
+        {
+            get { return (bool)GetValue(UseMaterialWindowProperty); }
+            set { SetValue(UseMaterialWindowProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Header.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty UseMaterialWindowProperty =
+            DependencyProperty.Register("UseMaterialWindow", typeof(bool), typeof(SimpleDockHost), new PropertyMetadata(false));
 
 
         public string Title
@@ -108,11 +80,16 @@ namespace WExtraControlLibrary.UserControls.SimpleDock
         {
             // Remove from current visual tree
             var currContent = Content as IUndockable;
+            var dataContext = currContent.DataContext;
             Content = null;
             // Create Window and keep reference
             Size size = (currContent as UIElement).RenderSize;
-            detachedWindow = new Window() { Title = this.Title, SizeToContent= SizeToContent.Manual, Width = size.Width, Height= size.Height };
-            detachedWindow.Content = currContent;
+            detachedWindow = UseMaterialWindow ? new MaterialWindow() { Title = this.Title, SizeToContent= SizeToContent.Manual, Width = size.Width + MARGIN_WINDOW*2, Height= size.Height + MARGIN_WINDOW*2 } :
+                new Window() { Title = this.Title, SizeToContent = SizeToContent.Manual, Width = size.Width + MARGIN_WINDOW*2, Height = size.Height + MARGIN_WINDOW * 2 };
+            var grid = new Grid() { Margin = new Thickness(MARGIN_WINDOW) };
+            grid.Children.Add(currContent as UIElement);
+            detachedWindow.Content = grid;
+            detachedWindow.DataContext = dataContext;
             detachedWindow.Closing += OnClosingChildWindow;
             detachedWindow.Show();
 
@@ -121,14 +98,17 @@ namespace WExtraControlLibrary.UserControls.SimpleDock
 
         private void OnClosingChildWindow(object sender, CancelEventArgs e)
         {
+            // Get Grid
+            var grid = (sender as Window).Content as Grid;
             // Get child
-            var child = (sender as Window).Content;
+            var child = grid.Children[0];
             // Get Original Window
             var originalWindow = Window.GetWindow(this);
             // Pass Window to IUndockable control
             (child as IUndockable).SetParentWindow(originalWindow);
             // Disconnect control/child from floating window
             (sender as Window).Content = null;
+            grid.Children.Clear();
             // Reconnect here
             Content = child;
             this.Visibility = Visibility.Visible;

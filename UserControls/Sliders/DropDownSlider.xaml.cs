@@ -11,12 +11,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace WExtraControlLibrary.UserControls.DropDownCustomColorPicker
+namespace WExtraControlLibrary.UserControls.Sliders
 {
     /// <summary>
-    /// Interaction logic for CustomColorPicker.xaml
+    /// Interaction logic for DropDownSlider.xaml
     /// </summary>
-    public partial class CustomColorPicker : UserControl
+    public partial class DropDownSlider : UserControl
     {
         public event Action<Color> SelectedColorChanged;
 
@@ -38,12 +38,11 @@ namespace WExtraControlLibrary.UserControls.DropDownCustomColorPicker
 
         // Using a DependencyProperty as the backing store for SelectedColor.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedColorProperty =
-            DependencyProperty.Register("SelectedColor", typeof(Color), typeof(CustomColorPicker), new PropertyMetadata(Colors.Transparent, SelectedColorChangedDP));
+            DependencyProperty.Register("SelectedColor", typeof(Color), typeof(DropDownSlider), new PropertyMetadata(Colors.Transparent, SelectedColorChangedDP));
 
         private static void SelectedColorChangedDP(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            CustomColorPicker p = d as CustomColorPicker;
-            p.recContent.Fill = new SolidColorBrush((Color)e.NewValue);
+            
         }
 
 
@@ -57,50 +56,15 @@ namespace WExtraControlLibrary.UserControls.DropDownCustomColorPicker
 
         // Using a DependencyProperty as the backing store for ButtonStyle.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ButtonStyleProperty =
-            DependencyProperty.Register("ButtonStyle", typeof(Style), typeof(CustomColorPicker), new PropertyMetadata(null, ButtonStyleChanged));
+            DependencyProperty.Register("ButtonStyle", typeof(Style), typeof(DropDownSlider), new PropertyMetadata(null, ButtonStyleChanged));
 
 
         private static void ButtonStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            CustomColorPicker p = d as CustomColorPicker;
+            DropDownSlider p = d as DropDownSlider;
             p.b.Style = (Style)e.NewValue;
         }
 
-
-
-        public int PaddingW
-        {
-            get { return (int)GetValue(PaddingWProperty); }
-            set { SetValue(PaddingWProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for ButtonWidth.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty PaddingWProperty =
-            DependencyProperty.Register("PaddingW", typeof(int), typeof(CustomColorPicker), new PropertyMetadata(15, PaddingWChanged));
-
-        private static void PaddingWChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            CustomColorPicker p = d as CustomColorPicker;
-            var padding = (int)e.NewValue;
-            p.recContent.Width = p.b.Width - padding;
-        }
-
-        public int PaddingH
-        {
-            get { return (int)GetValue(PaddingHProperty); }
-            set { SetValue(PaddingHProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for ButtonWidth.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty PaddingHProperty =
-            DependencyProperty.Register("PaddingH", typeof(int), typeof(CustomColorPicker), new PropertyMetadata(15, PaddingHChanged));
-
-        private static void PaddingHChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            CustomColorPicker p = d as CustomColorPicker;
-            var padding = (int)e.NewValue;
-            p.recContent.Height = p.b.Height - padding;
-        }
 
 
         public int ButtonWidth
@@ -111,15 +75,14 @@ namespace WExtraControlLibrary.UserControls.DropDownCustomColorPicker
 
         // Using a DependencyProperty as the backing store for ButtonWidth.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ButtonWidthProperty =
-            DependencyProperty.Register("ButtonWidth", typeof(int), typeof(CustomColorPicker), new PropertyMetadata(30, ButtonWidthChanged));
+            DependencyProperty.Register("ButtonWidth", typeof(int), typeof(DropDownSlider), new PropertyMetadata(30, ButtonWidthChanged));
 
         private static void ButtonWidthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            CustomColorPicker p = d as CustomColorPicker;
+            DropDownSlider p = d as DropDownSlider;
             p.b.Width = (int)e.NewValue;
-            p.recContent.Width = p.b.Width - p.PaddingW;
+            p.recContent.Width = p.b.Width - 15;
         }
-
 
         public int ButtonHeight
         {
@@ -129,13 +92,13 @@ namespace WExtraControlLibrary.UserControls.DropDownCustomColorPicker
 
         // Using a DependencyProperty as the backing store for ButtonHeight.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ButtonHeightProperty =
-            DependencyProperty.Register("ButtonHeight", typeof(int), typeof(CustomColorPicker), new PropertyMetadata(30, ButtonHeightChanged));
+            DependencyProperty.Register("ButtonHeight", typeof(int), typeof(DropDownSlider), new PropertyMetadata(30, ButtonHeightChanged));
 
         private static void ButtonHeightChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            CustomColorPicker p = d as CustomColorPicker;
+            DropDownSlider p = d as DropDownSlider;
             p.b.Height = (int)e.NewValue;
-            p.recContent.Height = p.b.Height - p.PaddingH;
+            p.recContent.Height = p.b.Height - 15;
         }
 
 
@@ -154,7 +117,7 @@ namespace WExtraControlLibrary.UserControls.DropDownCustomColorPicker
         //}
 
         bool _isContexMenuOpened = false;
-        public CustomColorPicker()
+        public DropDownSlider()
         {
             InitializeComponent();
             b.ContextMenu.Closed += new RoutedEventHandler(ContextMenu_Closed);
@@ -176,8 +139,8 @@ namespace WExtraControlLibrary.UserControls.DropDownCustomColorPicker
                 //    SelectedColorChanged(cp.CustomColor);
                 //}
                 //recContent.Fill = new SolidColorBrush(cp.CustomColor);
-                SelectedColor = cp.CustomColor;
-                HexValue = string.Format("#{0}", cp.CustomColor.ToString().Substring(1));
+                //SelectedColor = cp.CustomColor;
+                //HexValue = string.Format("#{0}", cp.CustomColor.ToString().Substring(1));
 
             }
             _isContexMenuOpened = false;
